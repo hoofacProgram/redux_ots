@@ -10,29 +10,86 @@
     }
   </style>
   <div id="red"></div>
+  <div id="blue"></div>
+  <div id="green"></div>
   <script>
     const reducer = (state, action) => {
       if (state === undefined) {
         return {color: 'yellow'}
       }
+      let newState
       if (action.type === 'CHANGE_COLOR') {
-        newState = Object.assign({}, state, {color: 'red'})
+        newState = Object.assign({}, state, {color: action.color})
       }
       return newState
     }
-    const store = Redux.createStore(reducer)
-    const state = store.getState()
-    const red = () => {
-        document.querySelector('#red').innerHTML =  `
-        <div class="container" id='component_red' style='background-color:${state.color}'>
-          <h1>red</h1>
-          <input type="button" value="fire" onclick="
-          store.dispatch({type: 'CHANGE_COLOR', color: 'red'})
-          " />
-        </div>
-        `
-      }
-      red()
+    const store = Redux.createStore(
+      reducer
+      , window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()  // Redex DevTools 사용을 위한 추가
+      )
+    // const red = () => {
+    //   const state = store.getState()
+    //   document.querySelector('#red').innerHTML =  `
+    //     <div class="container" id='component_red' style='background-color:${state.color}'>
+    //       <h1>${state.color}</h1>
+    //       <input type="button" value="change" onclick="
+    //       store.dispatch({type: 'CHANGE_COLOR', color: 'red'})
+    //       " />
+    //     </div>
+    //     `
+    // }
+    // store.subscribe(red)
+    // red()
+
+    // const blue = () => {
+    //   const state = store.getState()
+    //   document.querySelector('#blue').innerHTML =  `
+    //   <div class="container" id='component_blue' style='background-color:${state.color}'>
+    //     <h1>${state.color}</h1>
+    //     <input type="button" value="change" onclick="
+    //     store.dispatch({type: 'CHANGE_COLOR', color: 'blue'})
+    //     " />
+    //   </div>
+    //   `
+    // }
+    // store.subscribe(blue)
+    // blue()
+
+    // const green = () => {
+    //   const state = store.getState()
+    //   document.querySelector('#green').innerHTML =  `
+    //   <div class="container" id='component_green' style='background-color:${state.color}'>
+    //     <h1>${state.color}</h1>
+    //     <input type="button" value="change" onclick="
+    //     store.dispatch({type: 'CHANGE_COLOR', color: 'green'})
+    //     " />
+    //   </div>
+    //   `
+    // }
+    // store.subscribe(green)
+    // green()
+
+    /* 위쪽의 주석처리 된 색상 변경 함수를 간단히 만들어 보았다. */
+    const changeColor = (color) => {
+      const state = store.getState()
+      document.querySelector(`#${color}`).innerHTML =  `
+      <div class="container" id='component_${color}' style='background-color:${state.color}'>
+        <h1>${state.color}</h1>
+        <input type="button" value="change" onclick="
+        store.dispatch({type: 'CHANGE_COLOR', color: '${color}'})
+        " />
+      </div>
+      `
+    }
+    const red = () => changeColor('red')
+    const blue = () => changeColor('blue')
+    const green = () => changeColor('green')  
+    store.subscribe(red)
+    store.subscribe(blue)
+    store.subscribe(green)
+    red()
+    blue()
+    green()
   </script>
 </body>
 </html>
