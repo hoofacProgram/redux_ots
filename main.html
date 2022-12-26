@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/4.2.0/redux.min.js"></script>
 </head>
 <body>
   <div id="subject"></div>
@@ -16,11 +17,19 @@
       `
     }
     function TOC () {
+      const state = store.getState()
+      let liTags = ''
+      state.contents.map( e => {
+        liTags = liTags + `<li><a onclick="
+          event.preventDefault()
+          const action = {type:'SELECT', id:${e.id}}
+          store.dispatch(action)
+          " href="${e.id}.html">${e.title}</a></li>`
+      })
       document.querySelector('#toc').innerHTML = `
       <nav>
         <ol>
-          <li><a href="1.html">HTML</a></li>
-          <li><a href="2.html">CSS</a></li>
+          ${liTags}
         </ol>
       </nav>
       `
@@ -33,18 +42,38 @@
       </ul>
       `
     }
-    function content () {
+    function article () {
+      const state = store.getState()
+      const content = state.contents.filter(e => e.id === state.selected_id)
       document.querySelector('#content').innerHTML = `
       <article>
-        <h2>HTML</h2>
-        HTML is...
+        <h2>${content[0].title}</h2>
+        ${content[0].desc}
       </article>
       `
     }
+    function reducer (state, action) {
+      if (state === undefined) {
+        return {
+          selected_id: 1,
+          contents: [
+            {id:1, title:'HTML', desc:'HTML is...'},
+            {id:2, title:'CSS', desc:'CSS is...'}
+          ]
+        }
+      }
+      let newState = {}
+      if (action.type === 'SELECT') {
+        newState = Object.assign(newState, state, {selected_id: action.id})
+      }
+      return newState
+    }
+    const store = Redux.createStore(reducer)
+    store.subscribe(article)
     subject()
     TOC()
     control()
-    content()
+    article()
   </script>
 </body>
 </html>
